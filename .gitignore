@@ -2,3 +2,4 @@ files.txt
 tags
 bin/
 build/
+.clang-format

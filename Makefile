@@ -1,14 +1,14 @@
-CC := gcc
+CC := g++
 
 SRCDIR := src
 BUILDDIR := build
 TARGET := bin/main
 
-SRCEXT := c
+SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
-CFLAGS := -g  -Wall
+CFLAGS := -std=c++14 -Wall
 
 LIB :=
 INC := -I include

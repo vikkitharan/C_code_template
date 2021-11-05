@@ -8,14 +8,14 @@ SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
-CFLAGS := -std=c++14 -Wall
+CFLAGS := -std=c++2a -Wall
 
 LIB :=
 INC := -I include
 
 $(TARGET): $(OBJECTS)
 	mkdir -p bin
-	$(CC) $^ -o $(TARGET) $(LIB) -lm
+	$(CC) $^ -o $(TARGET) $(LIB)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	mkdir -p $(BUILDDIR)

@@ -1,10 +1,10 @@
-This is a c source code template
+This is a C++ source code template
 
 # How to use this template
 
-1. Clone or copy C_code_template directory
+1. Clone or copy code_template directory
 
-2. Rename C_code_template directory as your project name
+2. Rename code_template directory as your project name
 
 3. Delete .git directory
 

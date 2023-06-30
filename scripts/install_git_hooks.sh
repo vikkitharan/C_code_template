@@ -8,49 +8,49 @@
 #  Modified on: 2021/08/08
 #      Version: 0.0.0
 #*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+set -e
 
-# Create the clang-format configuration file.
+# Prompt for LLVM style
+read -rp "Do you want to use the default LLVM style? (y/n) [y]: " is_llvm_format
+is_llvm_format=${is_llvm_format:-y}
 
-printf "Do you want to use the default format style (LLVM)?\n \
-  enter (y/n)  y for yes any other keys for no: "
-
-read -r is_llvm_format
-
-if [[ "${is_llvm_format}" == 'y' ]]; then
-  clang-format -style=llvm -dump-config > ./.clang-format
-else
-  printf "\nBelow styles can be configured by changing -style option. Please change -style option and rerun for different formats.
-  -style=google for google, \n \
-  -style=chromium for Chromium, \n \
-  -style=mozilla for Mozilla  or \n \
-  -style=webkit for WebKit. \n \
-  Other formats are possible.  For further details are available in clang-format [webpage](https://clang.llvm.org/docs/ClangFormat.html).\n"
-
-  printf "\nHave you changed the -style in scripts/install_git_hooks.sh or will you change ./.clang-format file manually?\n \
-  enter (y/n)  y for yes any other keys for no: "
-
-  read -r is_format_update
-
-  if [[ "${is_format_update}" == 'y' ]]; then
+generate_clang_format() {
     clang-format -style=llvm -dump-config > ./.clang-format
-  else
-    printf "\nPlease update -style option or update ./clang-format.\n"
-    exit 1
-  fi
+    echo ".clang-format file created."
+}
+
+if [[ "$is_llvm_format" == "y" ]]; then
+    generate_clang_format
+else
+    echo "Please update the -style option in this script or manually edit .clang-format."
+    read -rp "Have you done this? (y/n): " is_format_update
+    if [[ "$is_format_update" == "y" ]]; then
+        generate_clang_format
+    else
+        echo "Aborting. Update the style and rerun."
+        exit 1
+    fi
 fi
 
-## Install the hooks by bellow command
-GIT_DIR=$(git rev-parse --git-dir)
+# Ensure git repo
+if ! GIT_DIR=$(git rev-parse --git-dir 2>/dev/null); then
+    echo "Error: Not a git repository."
+    exit 1
+fi
 
-printf "\nInstalling hooks...\n"
+mkdir -p $GIT_DIR/hooks
 
-cp ./scripts/.git_hooks/clang-format-diff.py "$GIT_DIR"/hooks/
-cp ./scripts/.git_hooks/format_clang_c_cpp.sh "$GIT_DIR"/hooks/
-cp ./scripts/.git_hooks/update_ctags.sh "$GIT_DIR"/hooks/
-cp ./scripts/.git_hooks/pre-commit "$GIT_DIR"/hooks/pre-commit
-cp ./scripts/.git_hooks/post-checkout "$GIT_DIR"/hooks/post-checkout
-cp ./scripts/.git_hooks/post-commit "$GIT_DIR"/hooks/post-commit
-cp ./scripts/.git_hooks/post-merge "$GIT_DIR"/hooks/post-merge
-cp ./scripts/.git_hooks/post-rewrite "$GIT_DIR"/hooks/post-rewrite
+# Install hooks
+HOOKS=("clang-format-diff.py" "format_clang_c_cpp.sh" "pre-commit" "post-checkout" "post-commit" "post-merge" "post-rewrite")
+for hook in "${HOOKS[@]}"; do
+    src="./scripts/.git_hooks/$hook"
+    dest="$GIT_DIR/hooks/$hook"
+    if [[ -f "$src" ]]; then
+        cp "$src" "$dest"
+        chmod +x "$dest"
+    else
+        echo "Warning: $src not found, skipping."
+    fi
+done
 
-printf "\nInstalled\n"
+echo "Git hooks installed successfully!"

@@ -1,6 +1,3 @@
-#ifndef FLAGS
-#define FLAGS
+#pragma once
 
 #define DEBUG 0
-
-#endif

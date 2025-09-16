@@ -1,8 +1,7 @@
 # Compiler and flags
-CC       := gcc
-CFLAGS   := -std=c17 -g -Wall -Wextra -pedantic -MMD -MP
+CXX      := g++
+CXXFLAGS := -std=c++20 -g -Wall -Wextra -pedantic -MMD -MP
 INC      := -I include
-LIBS     := -lm
 RM       := rm -rf
 
 # Project structure
@@ -11,7 +10,7 @@ BUILDDIR := build
 BINDIR   := bin
 TARGET   := $(BINDIR)/main
 
-SRCEXT   := c
+SRCEXT   := cpp
 SOURCES  := $(shell find $(SRCDIR) -type f -name '*.$(SRCEXT)')
 OBJECTS  := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 DEPS     := $(OBJECTS:.o=.d)
@@ -22,12 +21,12 @@ all: $(TARGET)
 # Link step
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(BINDIR)
-	$(CC) $(OBJECTS) -o $@ $(LIBS)
+	$(CXX) $(OBJECTS) -o $@
 
 # Compile step
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(INC) -c -o $@ $<
 
 # Include dependencies
 -include $(DEPS)
@@ -39,11 +38,11 @@ clean:
 # Run the program
 run: $(TARGET)
 	@echo "Running $(TARGET)..."
-	./$(TARGET)
+	@./$(TARGET)
 
 # Run tests
 test: $(TARGET)
-	@chmod +x test/test.sh 2>/dev/null || true
+	@test -x test/test.sh || chmod +x test/test.sh
 	@./test/test.sh || echo "No test script found."
 
 .PHONY: all clean run test

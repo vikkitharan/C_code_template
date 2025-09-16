@@ -1,13 +1,11 @@
-# C Project Template #
+# C++ Project Template #
 
-This is a C source code template with:
+This is a C++ source code template with:
 
 - Modular project structure (src/, include/, build/, bin/)
 - Makefile for building, cleaning, running, and testing
 - Git hooks setup for code formatting and automation
 - Example test.sh for memory checking with valgrind
-
-This is a C source code template
 
 ## How to Use This Template
 
